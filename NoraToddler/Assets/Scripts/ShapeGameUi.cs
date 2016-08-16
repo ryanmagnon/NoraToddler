@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using System;
+using UnityEngine.EventSystems;
 public class ShapeGameUi : MonoBehaviour {
     public GameObject[] Buttons;
     // Use this for initialization
@@ -15,8 +16,9 @@ public class ShapeGameUi : MonoBehaviour {
     public float AnimationSpeed = 0.01f;
     private float CurrentAnimationSpeed;
     public float AnimationIncrement = 0.01f;
-
+     
     private GameObject WinningButton;
+    private bool ClickEnabled = false;
 
     public float StartingAnimationSpeed = 0.1f;
 
@@ -31,7 +33,7 @@ public class ShapeGameUi : MonoBehaviour {
         if (LastParticle && !LastParticle.IsAlive())
             OnParticlesComplete();
         if (WinningAnimation)
-            PlayWinning();
+            PlayWinning();          
     }
 
     private void PlayWinning()
@@ -54,6 +56,11 @@ public class ShapeGameUi : MonoBehaviour {
         */
     }
 
+    public void EnableButtons()
+    {
+        enableButtonInteraction();
+    }
+
     private void FadeIncorrectButtons()
     {
         GameObject b;
@@ -71,11 +78,16 @@ public class ShapeGameUi : MonoBehaviour {
 
     private void FinishWinning()
     {
-        Debug.Log("Finishing Win");
         CurrentAnimationSpeed = StartingAnimationSpeed;
         WinningAnimation = false;
         WinningButton.GetComponent<Animator>().Play("ScaleDown");
+        enableButtonInteraction();
+        ClickEnabled = true;
+    }
 
+    private void enableButtonInteraction()
+    {
+        ClickEnabled = true;
     }
 
     public void SetGameController(ShapeGame g)
@@ -84,7 +96,7 @@ public class ShapeGameUi : MonoBehaviour {
     }
 
     public void FormatButtons(int currentNum, int maxNum)
-    {
+    {        
         for (int i = 0; i < maxNum; i++)
         {
             if (i < currentNum)
@@ -150,8 +162,6 @@ public class ShapeGameUi : MonoBehaviour {
         Buttons[i].SetActive(true);
         Animator a = Buttons[i].GetComponent<Animator>();
         a.Play("FadeIn");
-        
-
     }
 
     internal void SetSacArray(ShapeAndColor[] sacArray)
@@ -161,16 +171,19 @@ public class ShapeGameUi : MonoBehaviour {
 
     public void OnShapeClick(int index)
     {
-        ShapeGame.OnShapeClick(index);
+        if(ClickEnabled)
+            ShapeGame.OnShapeClick(index);
     }
 
     public void OnInstructionClick()
     {
-        ShapeGame.OnInstructionClick();
+        if(ClickEnabled)
+            ShapeGame.OnInstructionClick();
     }
 
     public void Win(ParticleSystem p, int winningButtonIndex)
     {
+        ClickEnabled = false;
         LastParticle = p;
         WinningAnimation = true;        
         CurrentAnimationSpeed = StartingAnimationSpeed;
@@ -179,9 +192,13 @@ public class ShapeGameUi : MonoBehaviour {
         p.Play();
         FadeIncorrectButtons();
         WinningButton.GetComponent<Animator>().Play("ScaleUp");
-    }    
+        disableButtonInteraction();
+    }
 
-
+    private void disableButtonInteraction()
+    {
+        ClickEnabled = false;
+    }
 
     private void OnParticlesComplete()
     {

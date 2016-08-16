@@ -133,7 +133,6 @@ public class SpriteManager : MonoBehaviour {
         switch (sac.Color)
         {
             case ShapeAndColor.Colors.Red:
-                Debug.Log(RedShapes);
                 RedShapes.Add(sac);
                 break;
             case ShapeAndColor.Colors.Orange:

@@ -23,6 +23,7 @@ public class ShapeGame : IGame
     private ShapeGameUi Ui;
     private GameController Game;
     private float WinDuration = 0f;
+    
 
 
     public ShapeGame(GameController game)
@@ -49,7 +50,7 @@ public class ShapeGame : IGame
         // set buttons to sprites in array        
         Ui.SetSacArray(SacArray);
         Ui.FormatButtons(CurrentNumShapes, MaxNumShapes);
-
+        Ui.EnableButtons();
         // choose correct index
         CurrentCorrectIndex = UnityEngine.Random.Range(0, (CurrentNumShapes - 1));
         // match index to shape for audio
@@ -128,6 +129,7 @@ public class ShapeGame : IGame
     {
         ParticleSystem p = null;
         ShapeAndColor.Shapes s = SacArray[CurrentCorrectIndex].Shape;
+        Debug.Log("Shape: " + s);
         switch (s)
         {
             case ShapeAndColor.Shapes.Circle:
