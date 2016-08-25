@@ -8,6 +8,7 @@ public class GameController : MonoBehaviour {
     public GameObject ShapeGameUI;
     public GameObject ColorGameUI;
     public SpriteManager Sprite_Manager;
+    public GameObject Accolades_Ui;
 
 
     private GameObject activeUI;
@@ -25,6 +26,8 @@ public class GameController : MonoBehaviour {
     public const int shapeMenu = 2;
     public const int colorMenu = 3;
 
+    public AudioController AudioController;
+
     public ParticleSystem[] ShapeParticles;
 
 	// Use this for initialization
@@ -36,6 +39,7 @@ public class GameController : MonoBehaviour {
         InstructionMenuUI.SetActive(false);
         ShapeGameUI.SetActive(false);
         ColorGameUI.SetActive(false);
+        Accolades_Ui.SetActive(false);
     }
 	
 	// Update is called once per frame
@@ -103,6 +107,11 @@ public class GameController : MonoBehaviour {
         }
       
         return g;
+    }
+
+    public void PlayRandomAccolade()
+    {
+        Accolades_Ui.GetComponent<Accolades_UI>().PlayRandomAccolade();
     }
 
     public void QuitToMenu()

@@ -22,14 +22,15 @@ public class ShapeGame : IGame
     private float buttonPadding = 20f;
     private ShapeGameUi Ui;
     private GameController Game;
-    private float WinDuration = 0f;
-    
-
+    private ParticleSystem LastParticle = null;
+    private bool Accolading = false;
+    private AudioController Audio_Controller;
 
     public ShapeGame(GameController game)
     {
         Game = game;
         Sprite_Manager = game.Sprite_Manager;
+        Audio_Controller = game.AudioController;
         Ui = game.ShapeGameUI.GetComponent<ShapeGameUi>();
         Ui.SetGameController(this);
     }
@@ -37,6 +38,7 @@ public class ShapeGame : IGame
     public void Play()
     {
         CurrentNumShapes = StartingNumShapes;
+        Ui.HideButtons();
         NewRound();
         // start timer
         // quit screen when timer runs out.
@@ -59,11 +61,13 @@ public class ShapeGame : IGame
 
     public void PlayInstruction()
     {
-        Debug.Log("Correct Button Index: " + CurrentCorrectIndex);
+        
+        Game.AudioController.ShapeInstruction(SacArray[CurrentCorrectIndex].Shape);
     }
 
     public void OnInstructionClick()
     {
+        
         PlayInstruction();
     }
 
@@ -103,7 +107,23 @@ public class ShapeGame : IGame
 
     public void Update()
     {
+        if (LastParticle && !LastParticle.IsAlive())
+            OnParticlesComplete();
+        if (Accolading && !Game.Accolades_Ui.GetComponent<Accolades_UI>().IsAnimating)
+            OnAccoladeComplete();
+    }
 
+    private void OnParticlesComplete()
+    {
+        LastParticle.gameObject.SetActive(false);
+        LastParticle = null;
+        PlayAccolades();
+    }
+
+    private void PlayAccolades()
+    {
+        Game.PlayRandomAccolade();
+        OnAccoladeComplete();
     }
 
     public void Quit()
@@ -154,14 +174,27 @@ public class ShapeGame : IGame
                 p = Game.ShapeParticles[6];
                 break;
         }
-        Ui.Win(p, CurrentCorrectIndex);
+        PlayShapeAffirmationAudio(s);
+        LastParticle = p;
+        Ui.Win(CurrentCorrectIndex);
+        p.gameObject.SetActive(true);
+        p.Play();
+    }
+
+    private void PlayShapeAffirmationAudio(ShapeAndColor.Shapes s)
+    {
         
     }
-    
-    private void OnParticleFinish()
+
+    public void OnAccoladeComplete()
     {
+        
         NewRound();
     }
 
+    
+
+    
+    
 
 }

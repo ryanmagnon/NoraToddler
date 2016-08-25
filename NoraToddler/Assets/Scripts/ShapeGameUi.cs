@@ -8,7 +8,8 @@ public class ShapeGameUi : MonoBehaviour {
     // Use this for initialization
     private ShapeGame ShapeGame;
     private ShapeAndColor[] Sacs;
-    private ParticleSystem LastParticle = null;
+    
+    private int LastWinningButton = -1;
     private float padding = 30f;
     private float StartingScale;
     public float WinScale = 1f;
@@ -16,6 +17,7 @@ public class ShapeGameUi : MonoBehaviour {
     public float AnimationSpeed = 0.01f;
     private float CurrentAnimationSpeed;
     public float AnimationIncrement = 0.01f;
+    public GameObject Audio_Button;
      
     private GameObject WinningButton;
     private bool ClickEnabled = false;
@@ -24,16 +26,19 @@ public class ShapeGameUi : MonoBehaviour {
 
     void Start () {
 	    StartingScale = Buttons[0].gameObject.GetComponent<RectTransform>().localScale.x;
-        for (int i = 0; i < Buttons.Length; i++)
-            Buttons[i].GetComponent<Animator>().Play("InstantTransparent");
     }
 	
 	// Update is called once per frame
 	void Update () {
-        if (LastParticle && !LastParticle.IsAlive())
-            OnParticlesComplete();
+
         if (WinningAnimation)
             PlayWinning();          
+    }
+
+    internal void HideButtons()
+    {
+        for (int i = 0; i < Buttons.Length; i++)
+            Buttons[i].GetComponent<Animator>().Play("InstantTransparent");
     }
 
     private void PlayWinning()
@@ -82,7 +87,13 @@ public class ShapeGameUi : MonoBehaviour {
         WinningAnimation = false;
         WinningButton.GetComponent<Animator>().Play("ScaleDown");
         enableButtonInteraction();
+        enableAudioButton();
         ClickEnabled = true;
+    }
+
+    private void enableAudioButton()
+    {
+        Audio_Button.GetComponent<Animator>().Play("FadeIn");
     }
 
     private void enableButtonInteraction()
@@ -181,18 +192,29 @@ public class ShapeGameUi : MonoBehaviour {
             ShapeGame.OnInstructionClick();
     }
 
-    public void Win(ParticleSystem p, int winningButtonIndex)
+    public void Win(int winningButtonIndex)
     {
         ClickEnabled = false;
-        LastParticle = p;
+        
         WinningAnimation = true;        
         CurrentAnimationSpeed = StartingAnimationSpeed;
-        WinningButton = Buttons[winningButtonIndex];
-        p.gameObject.SetActive(true);
-        p.Play();
+        LastWinningButton = winningButtonIndex;
+        WinningButton = Buttons[LastWinningButton];
         FadeIncorrectButtons();
+        FadeAudioButton();
         WinningButton.GetComponent<Animator>().Play("ScaleUp");
         disableButtonInteraction();
+        PlayConfirmation(Sacs[winningButtonIndex].Shape);
+    }
+
+    private void PlayConfirmation(ShapeAndColor.Shapes Shape)
+    {
+        Debug.Log("Confirmation Audio Goes Here: Yeah! " + Shape);
+    }
+
+    private void FadeAudioButton()
+    {
+        Audio_Button.GetComponent<Animator>().Play("FadeOut");
     }
 
     private void disableButtonInteraction()
@@ -200,12 +222,23 @@ public class ShapeGameUi : MonoBehaviour {
         ClickEnabled = false;
     }
 
-    private void OnParticlesComplete()
+
+    private void PlayAccolades()
     {
-        LastParticle.gameObject.SetActive(false);
-        ShapeGame.NewRound();
-        LastParticle = null;
-        FinishWinning();
+        Debug.Log("PlayAccolades Go here");
     }
+
+    public void ResetWinner()
+    {
+        WinningButton = Buttons[LastWinningButton];
+        WinningButton.GetComponent<Animator>().Play("FadeOut");
+        LastWinningButton = -1;
+    }
+
+    public void OnConfirmationComplete()
+    {
+        ResetWinner();
+    }
+
     
 }
