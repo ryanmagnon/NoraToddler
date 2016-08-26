@@ -57,31 +57,35 @@ public class Accolades_UI : MonoBehaviour {
     }
 
     private void Finish()
-    {
-        IsAnimating = false;
+    {       
         gameObject.SetActive(false);
+        CloseRunning = false;
+        IsAnimating = false;
     }
 
     public void PlayRandomAccolade()
     {
-        IsAnimating = true;
-        OpenRunning = true;
-        gameObject.SetActive(true);
         int i = UnityEngine.Random.Range(0, AccoladeSprites.Length - 1);
-        PlaceHolder.GetComponent<Image>().sprite = AccoladeSprites[i];
+        IsAnimating = true;
+        gameObject.SetActive(true);
         a.Play("BounceIn");
+        OpenRunning = true;
+        PlaceHolder.GetComponent<Image>().sprite = AccoladeSprites[i];
+                               
+        Game.AudioController.PayoffAudio(i);
     }
 
     public void RunClose()
     {
         a.Play("BounceOut");
-        CloseRunning = true;
+        CloseRunning = true;        
     }
 
     private void RunTimer()
     {
         OpenRunning = false;
-        TimerRunning = true;        
+        TimerRunning = true;
+        a.Play("Normal");        
     }
     private void AccoladeTimerComplete()
     {        

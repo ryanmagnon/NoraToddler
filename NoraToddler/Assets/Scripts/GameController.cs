@@ -30,6 +30,7 @@ public class GameController : MonoBehaviour {
 
     public ParticleSystem[] ShapeParticles;
 
+    public bool AccoladePlaying { get { return Accolades_Ui.GetComponent<Accolades_UI>().IsAnimating;  } }
 	// Use this for initialization
 	void Start ()
     {

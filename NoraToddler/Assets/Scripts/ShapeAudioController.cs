@@ -53,7 +53,7 @@ public class ShapeAudioController : MonoBehaviour {
     {
 
         AudioSource a = null;
-        if (Instructions.Length >= 7)
+        if (Affirmations.Length >= 7)
             switch (shape)
             {
                 case ShapeAndColor.Shapes.Circle:
@@ -78,6 +78,8 @@ public class ShapeAudioController : MonoBehaviour {
                     a = Affirmations[6];
                     break;
             }
+        else
+            throw new System.Exception("Affirmations audio has fewer than 7 clips");
         return a;
     }
 }

@@ -74,20 +74,13 @@ public class ShapeGame : IGame
     private void onIncorrect()
     {
         IncorrectGuessInRound = true;
-        //play negative sfx
-        // 
-        Debug.Log("incorrect");
+        Audio_Controller.TryAgain(SacArray[CurrentCorrectIndex].Shape);
+                
     }
 
     private void onCorrect()
     {
-        Debug.Log("correct");
 
-        // hide incorrect sprites
-        // play affirmation.
-        // animate-scale correct
-        // repeat shape name
-        // add particles
         // if IncorrectThisRound decrement CurrentNumShapes by one limited to min.
         if (!IncorrectGuessInRound)
         {
@@ -109,7 +102,8 @@ public class ShapeGame : IGame
     {
         if (LastParticle && !LastParticle.IsAlive())
             OnParticlesComplete();
-        if (Accolading && !Game.Accolades_Ui.GetComponent<Accolades_UI>().IsAnimating)
+
+        if (Accolading && !Game.AccoladePlaying)
             OnAccoladeComplete();
     }
 
@@ -122,13 +116,14 @@ public class ShapeGame : IGame
 
     private void PlayAccolades()
     {
-        Game.PlayRandomAccolade();
-        OnAccoladeComplete();
+        Accolading = true;
+        Game.PlayRandomAccolade();        
     }
 
     public void Quit()
     {
-
+        //reset anything that needs to be reset. 
+        // Let Game controller know that we're done. 
     }
 
     public int GetScreen()
@@ -147,9 +142,13 @@ public class ShapeGame : IGame
 
     public void Win()
     {
+        // hide incorrect sprites
+        // play affirmation.
+        // animate-scale correct
+        // repeat shape name
+        // add particles
         ParticleSystem p = null;
         ShapeAndColor.Shapes s = SacArray[CurrentCorrectIndex].Shape;
-        Debug.Log("Shape: " + s);
         switch (s)
         {
             case ShapeAndColor.Shapes.Circle:
@@ -177,19 +176,23 @@ public class ShapeGame : IGame
         PlayShapeAffirmationAudio(s);
         LastParticle = p;
         Ui.Win(CurrentCorrectIndex);
+        
         p.gameObject.SetActive(true);
         p.Play();
     }
 
     private void PlayShapeAffirmationAudio(ShapeAndColor.Shapes s)
     {
-        
+        Audio_Controller.YeahAudio();
+        Audio_Controller.ShapeAffirmation(s);
     }
 
     public void OnAccoladeComplete()
     {
-        
+        Accolading = false;
+        Ui.PostWinReset();
         NewRound();
+
     }
 
     

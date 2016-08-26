@@ -14,6 +14,7 @@ public class ShapeGameUi : MonoBehaviour {
     private float StartingScale;
     public float WinScale = 1f;
     private bool WinningAnimation = false;
+    public bool IsAnimating { get { return WinningAnimation; } }
     public float AnimationSpeed = 0.01f;
     private float CurrentAnimationSpeed;
     public float AnimationIncrement = 0.01f;
@@ -30,7 +31,6 @@ public class ShapeGameUi : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
         if (WinningAnimation)
             PlayWinning();          
     }
@@ -48,17 +48,14 @@ public class ShapeGameUi : MonoBehaviour {
             CurrentAnimationSpeed = 1;
         WinningButton.transform.localPosition = Vector2.Lerp(WinningButton.transform.localPosition, new Vector2(0, 0), CurrentAnimationSpeed);
         if (CurrentAnimationSpeed != 1)
+        {
             CurrentAnimationSpeed += AnimationIncrement;
-
-        
-        /*
-        if (CurrentAnimationSpeed > 1)
-            CurrentAnimationSpeed = 1;
-        WinningButton.transform.localScale = Vector3.Lerp(WinningButton.transform.localScale, new Vector3(WinScale, WinScale, WinScale), CurrentAnimationSpeed);
-        
-        if (CurrentAnimationSpeed != 1)
-            CurrentAnimationSpeed += AnimationIncrement;
-        */
+        }
+        else
+        {
+            WinningButton.transform.localPosition = new Vector2(0, 0);
+            FinishWinning();
+        }
     }
 
     public void EnableButtons()
@@ -85,7 +82,12 @@ public class ShapeGameUi : MonoBehaviour {
     {
         CurrentAnimationSpeed = StartingAnimationSpeed;
         WinningAnimation = false;
-        WinningButton.GetComponent<Animator>().Play("ScaleDown");
+    }
+
+    public void PostWinReset()
+    {
+        if(WinningButton != null)
+            WinningButton.GetComponent<Animator>().Play("ScaleDown");
         enableButtonInteraction();
         enableAudioButton();
         ClickEnabled = true;
@@ -148,10 +150,11 @@ public class ShapeGameUi : MonoBehaviour {
         float paddingXMultiplier = 0;
         if (Math.Abs(xMultiplier) > 0)
             paddingXMultiplier = xMultiplier / Math.Abs(xMultiplier); // returns -1 or +1
+        /*
         float paddingYMultiplier = 0;
         if (Math.Abs(yMultiplier) > 0)
             paddingYMultiplier = yMultiplier / Math.Abs(yMultiplier); // returns -1 or +1
-
+            */
         // set the x and y of button
         float x = width * xMultiplier + padding * paddingXMultiplier;
         float y = height * yMultiplier + padding;
