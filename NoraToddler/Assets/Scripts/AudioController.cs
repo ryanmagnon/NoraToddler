@@ -100,7 +100,7 @@ public class AudioController : MonoBehaviour {
 
     public void YeahAudio()
     {
-        QueueAudio(Payoff_Audio_Con.Yeah());
+        QueueAudio(Payoff_Audio_Con.Yeah(), true);
     }
 
     public void PayoffAudio(int i)
