@@ -50,8 +50,6 @@ public class ShapeGameUi : AbstractGameUi {
         }
     }
 
-
-
     private void FadeIncorrectButtons()
     {
         GameObject b;
@@ -66,6 +64,7 @@ public class ShapeGameUi : AbstractGameUi {
             }
         }
     }
+
     public void FormatButtons(int currentNum, int maxNum)
     {
         for (int i = 0; i < maxNum; i++)
@@ -145,10 +144,7 @@ public class ShapeGameUi : AbstractGameUi {
         Audio_Button.GetComponent<Animator>().Play("FadeOut");
     }
 
-    private void disableButtonInteraction()
-    {
-        ClickEnabled = false;
-    }
+
 
 
     private void PlayAccolades()

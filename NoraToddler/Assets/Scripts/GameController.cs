@@ -29,6 +29,8 @@ public class GameController : MonoBehaviour {
     public AudioController AudioController;
 
     public ParticleSystem[] ShapeParticles;
+    public ParticleSystem[] ColorParticles;
+
 
     public bool AccoladePlaying { get { return Accolades_Ui.GetComponent<Accolades_UI>().IsAnimating;  } }
 	// Use this for initialization

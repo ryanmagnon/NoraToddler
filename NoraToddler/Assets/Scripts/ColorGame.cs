@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class ColorGame : AbstractGame, IGame
 {
-    private SpriteManager sprite_Manager;
+    //private SpriteManager sprite_Manager;
     private int CurrentNumColors;
     public int StartingNumColors = 3;
     private bool IncorrectGuessInRound = false;
@@ -17,7 +17,7 @@ public class ColorGame : AbstractGame, IGame
     private int CurrentCorrectIndex;
 
     public int MaxNumColors = 6;
-    private int MinNumColors;
+    public int MinNumColors = 2;
     
 
     public ColorGame(GameController game): base(game)
@@ -83,14 +83,40 @@ public class ColorGame : AbstractGame, IGame
 
     public void Update()
     {
-        
+        if (LastParticle && !LastParticle.IsAlive())
+            OnParticlesComplete();
+
+        if (Accolading && !Game.AccoladePlaying)
+            OnAccoladeComplete();
     }
+
+    public void OnAccoladeComplete()
+    {
+        Accolading = false;
+        UiComponent.PostWinReset();
+        NewRound();
+    }
+
+
 
     private void onIncorrect()
     {
         IncorrectGuessInRound = true;
         Audio_Controller.TryAgain(SacArray[CurrentCorrectIndex].Color);
 
+    }
+
+    private void OnParticlesComplete()
+    {
+        LastParticle.gameObject.SetActive(false);
+        LastParticle = null;
+        PlayAccolades();
+    }
+
+    private void PlayAccolades()
+    {
+        Accolading = true;
+        Game.PlayRandomAccolade();
     }
 
     private void onCorrect()
@@ -123,27 +149,27 @@ public class ColorGame : AbstractGame, IGame
         switch (c)
         {
             case ShapeAndColor.Colors.Red:
-                p = Game.ShapeParticles[0];
+                p = Game.ColorParticles[0];
                 break;
             case ShapeAndColor.Colors.Orange:
-                p = Game.ShapeParticles[1];
+                p = Game.ColorParticles[1];
                 break;
             case ShapeAndColor.Colors.Yellow:
-                p = Game.ShapeParticles[2];
+                p = Game.ColorParticles[2];
                 break;
             case ShapeAndColor.Colors.Green:
-                p = Game.ShapeParticles[3];
+                p = Game.ColorParticles[3];
                 break;
             case ShapeAndColor.Colors.Blue:
-                p = Game.ShapeParticles[4];
+                p = Game.ColorParticles[4];
                 break;
             case ShapeAndColor.Colors.Purple:
-                p = Game.ShapeParticles[5];
+                p = Game.ColorParticles[5];
                 break;
         }
         PlayColorAffirmationAudio(c);
         LastParticle = p;
-        //UiComponent.Win(CurrentCorrectIndex);
+        UiComponent.Win(CurrentCorrectIndex);
 
         p.gameObject.SetActive(true);
         p.Play();

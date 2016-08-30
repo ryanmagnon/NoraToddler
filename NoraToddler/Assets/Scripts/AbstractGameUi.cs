@@ -79,4 +79,9 @@ public class AbstractGameUi : MonoBehaviour
     {
         enableButtonInteraction();
     }
+
+    protected void disableButtonInteraction()
+    {
+        ClickEnabled = false;
+    }
 }

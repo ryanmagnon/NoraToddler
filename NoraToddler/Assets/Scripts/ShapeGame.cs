@@ -66,12 +66,10 @@ public class ShapeGame : AbstractGame, IGame
     {
         IncorrectGuessInRound = true;
         Audio_Controller.TryAgain(SacArray[CurrentCorrectIndex].Shape);
-                
     }
 
     private void onCorrect()
     {
-
         // if IncorrectThisRound decrement CurrentNumShapes by one limited to min.
         if (!IncorrectGuessInRound)
         {

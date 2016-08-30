@@ -96,6 +96,9 @@ public class AudioController : MonoBehaviour {
                 r = true;
                 break;
             }
+
+        if (!r && a == LastQueuedClip)
+            r = true;
         return r;
     }
 
