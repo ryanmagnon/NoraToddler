@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using System.Timers;
-public class ShapeGame : IGame
+public class ShapeGame : AbstractGame, IGame
 {
 
-    public SpriteManager Sprite_Manager;
+    
     public int StartingNumShapes = 3;
     public int MaxNumShapes = 7;
     public int MinNumShapes = 2;
@@ -15,30 +15,23 @@ public class ShapeGame : IGame
     private int CurrentCorrectIndex;
     private bool IncorrectGuessInRound;
     private ShapeAndColor[] SacArray;
-    private float areaWidth;
-    private float areaHeight;
-    public GameObject ShapeGameUi;
+    public GameObject UiGameObject;
     public GameObject[] Buttons;
-    private float buttonPadding = 20f;
-    private ShapeGameUi Ui;
-    private GameController Game;
-    private ParticleSystem LastParticle = null;
-    private bool Accolading = false;
-    private AudioController Audio_Controller;
+    private ShapeGameUi UiComponent;
+    
+    
 
-    public ShapeGame(GameController game)
+    public ShapeGame(GameController game) : base(game)
     {
-        Game = game;
-        Sprite_Manager = game.Sprite_Manager;
-        Audio_Controller = game.AudioController;
-        Ui = game.ShapeGameUI.GetComponent<ShapeGameUi>();
-        Ui.SetGameController(this);
+        
+        UiComponent = game.ShapeGameUI.GetComponent<ShapeGameUi>();
+        UiComponent.SetGameController(this);
     }
 
     public void Play()
     {
         CurrentNumShapes = StartingNumShapes;
-        Ui.HideButtons();
+        UiComponent.HideButtons();
         NewRound();
         // start timer
         // quit screen when timer runs out.
@@ -50,9 +43,9 @@ public class ShapeGame : IGame
         // randomize shape choices
         SacArray = Sprite_Manager.getRandomColors(CurrentNumShapes);
         // set buttons to sprites in array        
-        Ui.SetSacArray(SacArray);
-        Ui.FormatButtons(CurrentNumShapes, MaxNumShapes);
-        Ui.EnableButtons();
+        UiComponent.SetSacArray(SacArray);
+        UiComponent.FormatButtons(CurrentNumShapes, MaxNumShapes);
+        UiComponent.EnableButtons();
         // choose correct index
         CurrentCorrectIndex = UnityEngine.Random.Range(0, (CurrentNumShapes - 1));
         // match index to shape for audio
@@ -61,13 +54,11 @@ public class ShapeGame : IGame
 
     public void PlayInstruction()
     {
-        
-        Game.AudioController.ShapeInstruction(SacArray[CurrentCorrectIndex].Shape);
+        Audio_Controller.ShapeInstruction(SacArray[CurrentCorrectIndex].Shape);
     }
 
     public void OnInstructionClick()
-    {
-        
+    {       
         PlayInstruction();
     }
 
@@ -94,8 +85,6 @@ public class ShapeGame : IGame
         }
         // else increment CurrentNumShapes by one limited to max.
         Win();
-
-
     }
 
     public void Update()
@@ -175,7 +164,7 @@ public class ShapeGame : IGame
         }
         PlayShapeAffirmationAudio(s);
         LastParticle = p;
-        Ui.Win(CurrentCorrectIndex);
+        UiComponent.Win(CurrentCorrectIndex);
         
         p.gameObject.SetActive(true);
         p.Play();
@@ -190,9 +179,8 @@ public class ShapeGame : IGame
     public void OnAccoladeComplete()
     {
         Accolading = false;
-        Ui.PostWinReset();
+        UiComponent.PostWinReset();
         NewRound();
-
     }
 
     

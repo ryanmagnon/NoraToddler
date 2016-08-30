@@ -8,6 +8,7 @@ public class AudioController : MonoBehaviour {
     public PayoffAudioController Payoff_Audio_Con;
     public SFXController Sfx;
     public ShapeAudioController ShapeAudio;
+    public ColorAudioController ColorAudio;
     private List<AudioSource> Queue = new List<AudioSource>();
     
     private AudioSource LastQueuedClip = null;
@@ -74,6 +75,11 @@ public class AudioController : MonoBehaviour {
             Queue.Add(e);
     }
 
+    public void ColorInstruction(ShapeAndColor.Colors color)
+    {
+        PlayAudio(ColorAudio.InstructionAudio(color));
+    }
+
     private void ClearQueue()
     {
         if (LastQueuedClip != null && LastQueuedClip.isPlaying)
@@ -118,7 +124,11 @@ public class AudioController : MonoBehaviour {
         QueueAudio(Payoff_Audio_Con.TryAgain());
         QueueAudio(ShapeAudio.InstructionAudio(shape));
     }
-
+    public void TryAgain(ShapeAndColor.Colors color)
+    {
+        QueueAudio(Payoff_Audio_Con.TryAgain());
+        QueueAudio(ColorAudio.InstructionAudio(color));
+    }
     /**
      * Used for when you want an audio clip to play regardless of what else is playing.
      */
@@ -130,4 +140,8 @@ public class AudioController : MonoBehaviour {
         LastInstantClip = a;
     }
 
+    internal void ColorAffirmation(ShapeAndColor.Colors c)
+    {
+        QueueAudio(ColorAudio.PlayAffirmation(c));
+    }
 }
