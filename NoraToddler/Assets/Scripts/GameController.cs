@@ -19,7 +19,7 @@ public class GameController : MonoBehaviour {
     public const int countingGame = 3;
     public const int alphabetGame = 4;
     public const int noGame = 0;
-    private int GameRequest = noGame;
+    //private int GameRequest = noGame;
 
     public const int mainMenu = 0;    
     public const int instructionMenu = 1;

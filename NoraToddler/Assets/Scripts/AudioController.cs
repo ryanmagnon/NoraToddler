@@ -24,12 +24,14 @@ public class AudioController : MonoBehaviour {
     //public ShapeInstructionController
 
     // Use this for initialization
-    void Start () {
+    void Start ()
+    {
 	
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
         if (Queue.Count > 0 && !ClipIsPlaying)
         {
             PopAndPlayFromQueue();
@@ -97,7 +99,7 @@ public class AudioController : MonoBehaviour {
                 break;
             }
 
-        if (!r && a == LastQueuedClip)
+        if (!r && a == LastQueuedClip && LastQueuedClip.isPlaying)
             r = true;
         return r;
     }

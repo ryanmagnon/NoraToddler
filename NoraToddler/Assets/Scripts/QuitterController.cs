@@ -6,7 +6,7 @@ using System;
 public class QuitterController : MonoBehaviour {
 
     public Toggle[] QuitButtons;
-    private Boolean[] isOver = new Boolean[4] { false, false, false, false };
+    private Boolean[] IsOver = new Boolean[4] { false, false, false, false };
     private Boolean toggleActive = false;
     public GameController Game_Controller;
 	// Use this for initialization
@@ -16,7 +16,7 @@ public class QuitterController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (toggleActive && Input.GetMouseButton(0) && NoButtonPressed())
+        if (toggleActive && Input.GetMouseButton(0) && NoButtonPressed)
             ClearQuit();
 
     }
@@ -26,34 +26,38 @@ public class QuitterController : MonoBehaviour {
         for (int i = 0; i < QuitButtons.Length; i++)
             QuitButtons[i].isOn = false;
     }
-
-    private bool NoButtonPressed()
+    public bool NoButtonPressed
     {
-        Boolean b = true;
-        for (int i = 0; i < isOver.Length; i++)
+        get
         {
-            if (isOver[i] == true)
+
+            Boolean b = true;
+            for (int i = 0; i < IsOver.Length; i++)
             {
-                b = false;
-                break;
+                if (IsOver[i] == true)
+                {
+                    b = false;
+                    break;
+                }
             }
+            return b;
         }
-        return b;
     }
+
     public void MouseEnter(int i)
     {
-        isOver[i] = true;
+        IsOver[i] = true;
     }
 
     public void MouseExit(int i)
     {
-        isOver[i] = false;
+        IsOver[i] = false;
     }
 
     public void QuitPress()
     {
         toggleActive = isToggleActive();
-        if(toggleActive && areAllPressed())
+        if(toggleActive && AreAllPressed())
         {
             Game_Controller.QuitToMenu();
             ClearQuit();
@@ -74,7 +78,7 @@ public class QuitterController : MonoBehaviour {
         return b;
     }
 
-    private Boolean areAllPressed()
+    private Boolean AreAllPressed()
     {
         Boolean b = true;
         for (int i = 0; i < QuitButtons.Length; i++)

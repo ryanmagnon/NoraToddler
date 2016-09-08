@@ -11,6 +11,7 @@ public class AbstractGame
     protected bool Accolading = false;
     protected AudioController Audio_Controller;
     protected SpriteManager Sprite_Manager;
+    private float[] Timers;
 
     public AbstractGame(GameController game)
     {
@@ -18,4 +19,11 @@ public class AbstractGame
         Sprite_Manager = game.Sprite_Manager;
         Audio_Controller = game.AudioController;
     }
+
+    protected int StartTimer(float seconds)
+    {
+        int id = Timers.Length;
+        return id;
+    }
+    
 }
