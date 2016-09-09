@@ -24,6 +24,7 @@ public class ShapeGameUi : AbstractGameUi {
     public float StartingAnimationSpeed = 0.1f;
 
     void Start () {
+        Debug.Log("Start called");
 	    StartingScale = Buttons[0].gameObject.GetComponent<RectTransform>().localScale.x;
     }
 	
@@ -81,6 +82,20 @@ public class ShapeGameUi : AbstractGameUi {
             }
         }
     }
+
+    private void ResetButtonsToStart()
+    {
+        Animator a;
+        GameObject b;
+        for (int i = 0; i < Buttons.Length; i++)
+        {
+            b = Buttons[i];
+            a = b.GetComponent<Animator>();
+            a.StopPlayback();
+            b.transform.localScale = new Vector3(StartingScale, StartingScale, 1);
+        }
+    }
+
     private void FinishWinning()
     {
         CurrentAnimationSpeed = StartingAnimationSpeed;
@@ -119,6 +134,13 @@ public class ShapeGameUi : AbstractGameUi {
             ShapeGame.OnShapeClick(index);
     }
 
+    internal void Quit()
+    {
+        ResetButtonsToStart();
+        FinishWinning();
+        ClearLastWinningButton();
+    }
+
     public void OnInstructionClick()
     {
         if(ClickEnabled)
@@ -145,19 +167,18 @@ public class ShapeGameUi : AbstractGameUi {
     }
 
 
-
-
-    private void PlayAccolades()
-    {
-        Debug.Log("PlayAccolades Go here");
-    }
-
     public void ResetWinner()
     {
         WinningButton = Buttons[LastWinningButton];
         WinningButton.GetComponent<Animator>().Play("FadeOut");
+        ClearLastWinningButton();
+    }
+
+    public void ClearLastWinningButton()
+    {
         LastWinningButton = -1;
     }
+        
 
     public void OnConfirmationComplete()
     {

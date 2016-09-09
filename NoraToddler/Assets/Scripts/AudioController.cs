@@ -129,20 +129,50 @@ public class AudioController : MonoBehaviour {
         QueueAudio(Payoff_Audio_Con.TryAgain());
         QueueAudio(ShapeAudio.InstructionAudio(shape));
     }
+
+    internal void StopAllStoredSounds()
+    {
+        ClearQueue();
+        if (LastInstantClip != null && LastInstantClip.isPlaying)
+            LastInstantClip.Stop();
+    }
+
     public void TryAgain(ShapeAndColor.Colors color)
     {
         QueueAudio(Payoff_Audio_Con.TryAgain());
         QueueAudio(ColorAudio.InstructionAudio(color));
     }
-    /**
-     * Used for when you want an audio clip to play regardless of what else is playing.
-     */
-    public void PlayAudio(AudioSource a)
+
+    public void Correct()
     {
-        if (LastInstantClip != null && LastInstantClip.isPlaying)
+        PlayAudio(Sfx.CorrectAudio);
+    }
+
+    public void ParticleAudio()
+    {
+        PlayAudio(Sfx.ParticleAudio, false);
+    }
+
+    public void Incorrect()
+    {
+        PlayAudio(Sfx.IncorrectAudio, false);
+    }
+
+    public void Applause()
+    {
+        QueueAudio(Sfx.ApplauseAudio);
+    }
+
+    /**
+     * Used for when you want an audio clip to play without queing it.
+     */
+    public void PlayAudio(AudioSource a, bool StopPreviousSound = true)
+    {
+        if (StopPreviousSound && LastInstantClip != null && LastInstantClip.isPlaying)
             LastInstantClip.Stop();
         a.Play();
-        LastInstantClip = a;
+        if(StopPreviousSound)
+            LastInstantClip = a;
     }
 
     internal void ColorAffirmation(ShapeAndColor.Colors c)

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using System.Timers;
-public class ShapeGame : AbstractGame, IGame
+public class ShapeGame : AbstractGuessingGame, IGame
 {
 
     
@@ -66,10 +66,12 @@ public class ShapeGame : AbstractGame, IGame
     {
         IncorrectGuessInRound = true;
         Audio_Controller.TryAgain(SacArray[CurrentCorrectIndex].Shape);
+        Audio_Controller.Incorrect();
     }
 
     private void onCorrect()
     {
+        //Audio_Controller.Correct();
         // if IncorrectThisRound decrement CurrentNumShapes by one limited to min.
         if (!IncorrectGuessInRound)
         {
@@ -104,13 +106,19 @@ public class ShapeGame : AbstractGame, IGame
     private void PlayAccolades()
     {
         Accolading = true;
-        Game.PlayRandomAccolade();        
+        Game.PlayRandomAccolade();
+                    
     }
 
     public void Quit()
     {
         //reset anything that needs to be reset. 
         // Let Game controller know that we're done. 
+        
+        if (LastParticle != null)
+            LastParticle.gameObject.SetActive(false);
+        Audio_Controller.StopAllStoredSounds();
+        UiComponent.Quit();
     }
 
     public int GetScreen()
@@ -166,6 +174,7 @@ public class ShapeGame : AbstractGame, IGame
         
         p.gameObject.SetActive(true);
         p.Play();
+        Audio_Controller.ParticleAudio();
     }
 
     private void PlayShapeAffirmationAudio(ShapeAndColor.Shapes s)

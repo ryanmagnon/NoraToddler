@@ -117,12 +117,15 @@ public class GameController : MonoBehaviour {
         Accolades_Ui.GetComponent<Accolades_UI>().PlayRandomAccolade();
     }
 
+    
+
     public void QuitToMenu()
     {
         if (CurrentGame != null)
         {
             CurrentGame.Quit();
             CurrentGame = null;
+            Accolades_Ui.SetActive(false);
         }
         SwapScreen(mainMenu);
     }

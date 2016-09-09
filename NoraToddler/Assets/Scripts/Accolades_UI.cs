@@ -73,6 +73,7 @@ public class Accolades_UI : MonoBehaviour {
         PlaceHolder.GetComponent<Image>().sprite = AccoladeSprites[i];
                                
         Game.AudioController.PayoffAudio(i);
+            
     }
 
     public void RunClose()
@@ -92,4 +93,8 @@ public class Accolades_UI : MonoBehaviour {
         RunClose();
     }
 
+    internal void Quit()
+    {
+        gameObject.SetActive(false);
+    }
 }

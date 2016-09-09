@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class ColorGame : AbstractGame, IGame
+public class ColorGame : AbstractGuessingGame, IGame
 {
     //private SpriteManager sprite_Manager;
     private int CurrentNumColors;
