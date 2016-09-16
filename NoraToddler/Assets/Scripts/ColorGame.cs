@@ -1,29 +1,41 @@
-﻿using System;
+﻿/*
+This file is part of Nora. 
+
+Nora is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Nora is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Nora. If not, see <http://www.gnu.org/licenses/>.
+*/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class ColorGame : AbstractGuessingGame, IGame
+public class ColorGame : AbstractGuessingGame, IGuessingGame, IGame
 {
     //private SpriteManager sprite_Manager;
-    private int CurrentNumColors;
-    public int StartingNumColors = 3;
-    private bool IncorrectGuessInRound = false;
-
-    private ShapeAndColor[] SacArray = null;
-    private ColorGameUi UiComponent;
-    public GameObject UiGameObject;
-    private int CurrentCorrectIndex;
-
-    public int MaxNumColors = 6;
-    public int MinNumColors = 2;
     
 
+    private ShapeAndColor[] SacArray = null;
+    
+   
     public ColorGame(GameController game): base(game)
     {
+        MaxNumButtons = 6;
+        MinNumButtons = 2;
+        StartingNumButtons = 3;
+        GameInstance = this;
         UiComponent = game.ColorGameUI.GetComponent<ColorGameUi>();
-        UiComponent.SetGameController(this);
+        UiComponent.SetGuessingGame(this);
     }
 
     public int GetScreen()
@@ -31,154 +43,56 @@ public class ColorGame : AbstractGuessingGame, IGame
         return GameController.colorMenu;
     }
 
-    public void OnInstructionClick()
-    {
-        PlayInstruction();
-    }
-
-    public void OnColorClick(int index)
-    {
-        // check if matches correct index
-        if (index == CurrentCorrectIndex)
-            onCorrect();
-        else
-            onIncorrect();
-    }
-
-    public void Play()
-    {
-        CurrentNumColors = StartingNumColors;
-        UiComponent.HideButtons();
-        NewRound();
-        // start timer
-        // quit screen when timer runs out.
-    }
-
-
-
-    public void NewRound()
-    {
-        IncorrectGuessInRound = false;
-        // randomize shape choices
-        SacArray = Sprite_Manager.getRandomShapes(CurrentNumColors);
-        // set buttons to sprites in array        
-        UiComponent.SetSacArray(SacArray);
-        UiComponent.FormatButtons(CurrentNumColors, MaxNumColors);
-        UiComponent.EnableButtons();
-        // choose correct index
-        CurrentCorrectIndex = UnityEngine.Random.Range(0, (CurrentNumColors - 1));
-        // match index to shape for audio
-        PlayInstruction();
-    }
-
-    private void PlayInstruction()
+    public void PlayInstruction(int CurrentCorrectIndex)
     {
         Audio_Controller.ColorInstruction(SacArray[CurrentCorrectIndex].Color);
     }
-
-    public void Quit()
+    
+    public void OnIncorrect(int CurrentCorrectIndex)
     {
-        
-    }
-
-    public void Update()
-    {
-        if (LastParticle && !LastParticle.IsAlive())
-            OnParticlesComplete();
-
-        if (Accolading && !Game.AccoladePlaying)
-            OnAccoladeComplete();
-    }
-
-    public void OnAccoladeComplete()
-    {
-        Accolading = false;
-        UiComponent.PostWinReset();
-        NewRound();
-    }
-
-
-
-    private void onIncorrect()
-    {
-        IncorrectGuessInRound = true;
         Audio_Controller.TryAgain(SacArray[CurrentCorrectIndex].Color);
-
+    }
+    
+    public void SetSpriteData(int CurrentNumColors)
+    {
+        SacArray = Sprite_Manager.getRandomShapes(CurrentNumColors);
+        // set buttons to sprites in array        
+        UiComponent.SetData(SacArray);
     }
 
-    private void OnParticlesComplete()
+    public ParticleSystem GetParticle(int i)
     {
-        LastParticle.gameObject.SetActive(false);
-        LastParticle = null;
-        PlayAccolades();
-    }
-
-    private void PlayAccolades()
-    {
-        Accolading = true;
-        Game.PlayRandomAccolade();
-    }
-
-    private void onCorrect()
-    {
-
-        // if IncorrectThisRound decrement CurrentNumShapes by one limited to min.
-        if (!IncorrectGuessInRound)
-        {
-            if (CurrentNumColors < MaxNumColors)
-                CurrentNumColors++;
-        }
-        else
-        {
-            if (CurrentNumColors > MinNumColors)
-                CurrentNumColors--;
-        }
-        // else increment CurrentNumShapes by one limited to max.
-        Win();
-    }
-
-    public void Win()
-    {
-        // hide incorrect sprites
-        // play affirmation.
-        // animate-scale correct
-        // repeat shape name
-        // add particles
-        ParticleSystem p = null;
         ShapeAndColor.Colors c = SacArray[CurrentCorrectIndex].Color;
+        ParticleSystem p = null;
         switch (c)
         {
             case ShapeAndColor.Colors.Red:
-                p = Game.ColorParticles[0];
+                p = GameCon.ColorParticles[0];
                 break;
             case ShapeAndColor.Colors.Orange:
-                p = Game.ColorParticles[1];
+                p = GameCon.ColorParticles[1];
                 break;
             case ShapeAndColor.Colors.Yellow:
-                p = Game.ColorParticles[2];
+                p = GameCon.ColorParticles[2];
                 break;
             case ShapeAndColor.Colors.Green:
-                p = Game.ColorParticles[3];
+                p = GameCon.ColorParticles[3];
                 break;
             case ShapeAndColor.Colors.Blue:
-                p = Game.ColorParticles[4];
+                p = GameCon.ColorParticles[4];
                 break;
             case ShapeAndColor.Colors.Purple:
-                p = Game.ColorParticles[5];
+                p = GameCon.ColorParticles[5];
                 break;
         }
-        PlayColorAffirmationAudio(c);
-        LastParticle = p;
-        UiComponent.Win(CurrentCorrectIndex);
-
-        p.gameObject.SetActive(true);
-        p.Play();
+        return p;
     }
 
-    private void PlayColorAffirmationAudio(ShapeAndColor.Colors c)
+    public void PlayAffirmationAudio(int CorrectIndex)
     {
         Audio_Controller.YeahAudio();
-        Audio_Controller.ColorAffirmation(c);
+        Audio_Controller.ColorAffirmation(SacArray[CorrectIndex].Color);
     }
+    
 }
 

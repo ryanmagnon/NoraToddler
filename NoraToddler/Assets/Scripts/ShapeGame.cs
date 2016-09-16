@@ -1,124 +1,41 @@
-﻿using System;
+﻿/*
+This file is part of Nora. 
+
+Nora is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Nora is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Nora. If not, see <http://www.gnu.org/licenses/>.
+*/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 using System.Timers;
-public class ShapeGame : AbstractGuessingGame, IGame
+public class ShapeGame : AbstractGuessingGame, IGame, IGuessingGame
 {
 
-    
-    public int StartingNumShapes = 3;
-    public int MaxNumShapes = 7;
-    public int MinNumShapes = 2;
-    private int CurrentNumShapes;
-    private int CurrentCorrectIndex;
-    private bool IncorrectGuessInRound;
+
     private ShapeAndColor[] SacArray;
-    public GameObject UiGameObject;
-    public GameObject[] Buttons;
-    private ShapeGameUi UiComponent;
     
-    
+
 
     public ShapeGame(GameController game) : base(game)
     {
-        
+        MaxNumButtons = 7;
+        MinNumButtons = 2;
+        StartingNumButtons = 3;
+        GameInstance = this;   
         UiComponent = game.ShapeGameUI.GetComponent<ShapeGameUi>();
-        UiComponent.SetGameController(this);
-    }
-
-    public void Play()
-    {
-        CurrentNumShapes = StartingNumShapes;
-        UiComponent.HideButtons();
-        NewRound();
-        // start timer
-        // quit screen when timer runs out.
-    }
-
-    public void NewRound()
-    {
-        IncorrectGuessInRound = false;
-        // randomize shape choices
-        SacArray = Sprite_Manager.getRandomColors(CurrentNumShapes);
-        // set buttons to sprites in array        
-        UiComponent.SetSacArray(SacArray);
-        UiComponent.FormatButtons(CurrentNumShapes, MaxNumShapes);
-        UiComponent.EnableButtons();
-        // choose correct index
-        CurrentCorrectIndex = UnityEngine.Random.Range(0, (CurrentNumShapes - 1));
-        // match index to shape for audio
-        PlayInstruction();
-    }
-
-    public void PlayInstruction()
-    {
-        Audio_Controller.ShapeInstruction(SacArray[CurrentCorrectIndex].Shape);
-    }
-
-    public void OnInstructionClick()
-    {       
-        PlayInstruction();
-    }
-
-    private void onIncorrect()
-    {
-        IncorrectGuessInRound = true;
-        Audio_Controller.TryAgain(SacArray[CurrentCorrectIndex].Shape);
-        Audio_Controller.Incorrect();
-    }
-
-    private void onCorrect()
-    {
-        //Audio_Controller.Correct();
-        // if IncorrectThisRound decrement CurrentNumShapes by one limited to min.
-        if (!IncorrectGuessInRound)
-        {
-            if (CurrentNumShapes < MaxNumShapes)
-                CurrentNumShapes++;
-        }
-        else
-        {
-            if (CurrentNumShapes > MinNumShapes)
-                CurrentNumShapes--;
-        }
-        // else increment CurrentNumShapes by one limited to max.
-        Win();
-    }
-
-    public void Update()
-    {
-        if (LastParticle && !LastParticle.IsAlive())
-            OnParticlesComplete();
-
-        if (Accolading && !Game.AccoladePlaying)
-            OnAccoladeComplete();
-    }
-
-    private void OnParticlesComplete()
-    {
-        LastParticle.gameObject.SetActive(false);
-        LastParticle = null;
-        PlayAccolades();
-    }
-
-    private void PlayAccolades()
-    {
-        Accolading = true;
-        Game.PlayRandomAccolade();
-                    
-    }
-
-    public void Quit()
-    {
-        //reset anything that needs to be reset. 
-        // Let Game controller know that we're done. 
-        
-        if (LastParticle != null)
-            LastParticle.gameObject.SetActive(false);
-        Audio_Controller.StopAllStoredSounds();
-        UiComponent.Quit();
+        UiComponent.SetGuessingGame(this);
     }
 
     public int GetScreen()
@@ -126,72 +43,62 @@ public class ShapeGame : AbstractGuessingGame, IGame
         return GameController.shapeMenu;
     }
 
-    public void OnShapeClick(int index)
+
+    public void PlayInstruction(int CurrentCorrectIndex)
     {
-        // check if matches correct index
-        if (index == CurrentCorrectIndex)
-            onCorrect();
-        else
-            onIncorrect();
+        Audio_Controller.ShapeInstruction(SacArray[CurrentCorrectIndex].Shape);
+    }
+    
+
+    public void OnIncorrect(int CurrentCorrectIndex)
+    {
+        Audio_Controller.TryAgain(SacArray[CurrentCorrectIndex].Shape);
     }
 
-    public void Win()
+
+    public void SetSpriteData(int CurrentNumShapes)
     {
-        // hide incorrect sprites
-        // play affirmation.
-        // animate-scale correct
-        // repeat shape name
-        // add particles
-        ParticleSystem p = null;
+        SacArray = Sprite_Manager.getRandomColors(CurrentNumShapes);
+        // set buttons to sprites in array        
+        UiComponent.SetData(SacArray);
+    }
+
+    public ParticleSystem GetParticle(int i)
+    {
         ShapeAndColor.Shapes s = SacArray[CurrentCorrectIndex].Shape;
+        ParticleSystem p = null;
         switch (s)
         {
             case ShapeAndColor.Shapes.Circle:
-                p = Game.ShapeParticles[0];
+                p = GameCon.ShapeParticles[0];
                 break;
             case ShapeAndColor.Shapes.Diamond:
-                p = Game.ShapeParticles[1];
+                p = GameCon.ShapeParticles[1];
                 break;
             case ShapeAndColor.Shapes.Oval:
-                p = Game.ShapeParticles[2];
+                p = GameCon.ShapeParticles[2];
                 break;
             case ShapeAndColor.Shapes.Rectangle:
-                p = Game.ShapeParticles[3];
+                p = GameCon.ShapeParticles[3];
                 break;
             case ShapeAndColor.Shapes.Square:
-                p = Game.ShapeParticles[4];
+                p = GameCon.ShapeParticles[4];
                 break;
             case ShapeAndColor.Shapes.Star:
-                p = Game.ShapeParticles[5];
+                p = GameCon.ShapeParticles[5];
                 break;
             case ShapeAndColor.Shapes.Triangle:
-                p = Game.ShapeParticles[6];
+                p = GameCon.ShapeParticles[6];
                 break;
         }
-        PlayShapeAffirmationAudio(s);
-        LastParticle = p;
-        UiComponent.Win(CurrentCorrectIndex);
-        
-        p.gameObject.SetActive(true);
-        p.Play();
-        Audio_Controller.ParticleAudio();
+        return p;
     }
 
-    private void PlayShapeAffirmationAudio(ShapeAndColor.Shapes s)
+    public void PlayAffirmationAudio(int CorrectIndex)
     {
         Audio_Controller.YeahAudio();
-        Audio_Controller.ShapeAffirmation(s);
+        Audio_Controller.ShapeAffirmation(SacArray[CorrectIndex].Shape);
     }
-
-    public void OnAccoladeComplete()
-    {
-        Accolading = false;
-        UiComponent.PostWinReset();
-        NewRound();
-    }
-
-    
-
     
     
 

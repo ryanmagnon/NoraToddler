@@ -1,5 +1,22 @@
-﻿using UnityEngine;
+﻿/*
+This file is part of Nora. 
+
+Nora is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Nora is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Nora. If not, see <http://www.gnu.org/licenses/>.
+*/
+using UnityEngine;
 using System.Collections;
+using System;
 
 public class GameController : MonoBehaviour {
     public GameObject MainMenuUi;
@@ -7,6 +24,7 @@ public class GameController : MonoBehaviour {
     public GameObject InstructionMenuUI;
     public GameObject ShapeGameUI;
     public GameObject ColorGameUI;
+    public GameObject TimeoutMenuUi;
     public SpriteManager Sprite_Manager;
     public GameObject Accolades_Ui;
 
@@ -25,6 +43,7 @@ public class GameController : MonoBehaviour {
     public const int instructionMenu = 1;
     public const int shapeMenu = 2;
     public const int colorMenu = 3;
+    public const int timeoutMenu = 4;
 
     public AudioController AudioController;
 
@@ -43,6 +62,7 @@ public class GameController : MonoBehaviour {
         ShapeGameUI.SetActive(false);
         ColorGameUI.SetActive(false);
         Accolades_Ui.SetActive(false);
+        TimeoutMenuUi.SetActive(false);
     }
 	
 	// Update is called once per frame
@@ -90,6 +110,10 @@ public class GameController : MonoBehaviour {
                 InstructionMenuUI.SetActive(true);
                 activeUI = InstructionMenuUI;
                 break;
+            case timeoutMenu:
+                TimeoutMenuUi.SetActive(true);
+                activeUI = TimeoutMenuUi;
+                break;
         }
     }
 
@@ -121,12 +145,23 @@ public class GameController : MonoBehaviour {
 
     public void QuitToMenu()
     {
+        KillGame();
+        SwapScreen(mainMenu);
+    }
+
+    private void KillGame()
+    {
         if (CurrentGame != null)
         {
             CurrentGame.Quit();
             CurrentGame = null;
             Accolades_Ui.SetActive(false);
         }
-        SwapScreen(mainMenu);
+    }
+
+    internal void TimeOutQuit()
+    {
+        KillGame();
+        SwapScreen(timeoutMenu);
     }
 }

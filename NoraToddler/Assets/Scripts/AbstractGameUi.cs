@@ -1,4 +1,21 @@
-﻿using System;
+﻿/*
+This file is part of Nora. 
+
+Nora is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Nora is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Nora. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +28,9 @@ public class AbstractGameUi : MonoBehaviour
     public GameObject[] Buttons;
     protected float padding;
     protected bool ClickEnabled = false;
+    
+
+
     protected void setButtonPosition(int i, int currentShapeTotal)
     {
         // Returns 0 or 1 depending on whether i is less or more than half of currentNumShapes        
@@ -45,6 +65,8 @@ public class AbstractGameUi : MonoBehaviour
         float y = height * yMultiplier + padding;
         rt.anchoredPosition = new Vector2(x, y);
     }
+
+
 
     protected void setButtonSprite(int i, Sprite s)
     {
@@ -84,4 +106,6 @@ public class AbstractGameUi : MonoBehaviour
     {
         ClickEnabled = false;
     }
+
+
 }
